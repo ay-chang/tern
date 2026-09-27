@@ -1,0 +1,72 @@
+/* Design tokens from design/Tern.dc.html. Dark is the default. */
+:root,
+[data-theme="dark"] {
+  --bg: #16171a;
+  --side: #191a1d;
+  --surf: #1c1d20;
+  --s1: #1f2023;
+  --hov: #222326;
+  --sel: #27282c;
+  --bd: #28292d;
+  --bd2: #222326;
+  --l1: #2a2b2f;
+  --l2: #2d2e32;
+  --l3: #333438;
+  --l4: #3c3d42;
+  --l5: #4b4c51;
+  --term: #131416;
+  --tx: #e4e2de;
+  --mu: #a9a7a2;
+  --dm: #7d7b77;
+  --dd: #5f5d59;
+  --off: #4a4946;
+  --tdim: #6b6965;
+  --hi: #fff;
+  --g: oklch(0.8 0.13 160);
+  --g2: oklch(0.85 0.13 160);
+  --b: oklch(0.8 0.11 245);
+  --a: oklch(0.82 0.12 80);
+  --r: oklch(0.72 0.14 25);
+  --p: oklch(0.78 0.11 310);
+  --scrim: rgba(5, 5, 6, 0.55);
+  --shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --bg: #f7f6f3;
+  --side: #f1f0ec;
+  --surf: #ffffff;
+  --s1: #ffffff;
+  --hov: #f4f3ef;
+  --sel: #e8e7e2;
+  --bd: #e3e1dc;
+  --bd2: #eceae6;
+  --l1: #e6e4df;
+  --l2: #dedcd7;
+  --l3: #d5d3ce;
+  --l4: #c6c4bf;
+  --l5: #aeaca7;
+  --term: #fcfbf9;
+  --tx: #1c1b19;
+  --mu: #4e4c48;
+  --dm: #6b6965;
+  --dd: #8b8985;
+  --off: #b8b6b1;
+  --tdim: #8b8985;
+  --hi: #000;
+  --g: oklch(0.52 0.12 160);
+  --g2: oklch(0.46 0.12 160);
+  --b: oklch(0.52 0.13 250);
+  --a: oklch(0.58 0.13 65);
+  --r: oklch(0.55 0.16 25);
+  --p: oklch(0.52 0.14 310);
+  --scrim: rgba(40, 38, 34, 0.25);
+  --shadow: 0 24px 80px rgba(40, 38, 34, 0.18);
+  color-scheme: light;
+}
+
+:root {
+  --font: "Geist Variable", system-ui, sans-serif;
+  --mono: "Geist Mono Variable", ui-monospace, Menlo, monospace;
+}

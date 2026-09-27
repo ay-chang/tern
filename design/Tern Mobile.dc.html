@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:#0E0F10;font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:var(--g,oklch(0.80 0.13 160));text-decoration:none}a:hover{color:var(--tx,#E4E2DE)}
+input::placeholder{color:var(--dd,#5f5d59)}
+[data-theme=dark]{--bg:#16171A;--side:#191A1D;--surf:#1C1D20;--s1:#1F2023;--hov:#222326;--sel:#27282C;--bd:#28292D;--bd2:#222326;--l1:#2A2B2F;--l2:#2D2E32;--l3:#333438;--l4:#3C3D42;--l5:#4B4C51;--term:#131416}
+[data-theme=light]{--bg:#F7F6F3;--surf:#FFFFFF;--sel:#E8E7E2;--bd:#E3E1DC;--bd2:#ECEAE6;--l3:#D5D3CE;--term:#FCFBF9;--tx:#1C1B19;--mu:#4E4C48;--dm:#6B6965;--dd:#8B8985;--off:#B8B6B1;--g:oklch(0.52 0.12 160);--b:oklch(0.52 0.13 250);--a:oklch(0.58 0.13 65);--r:oklch(0.55 0.16 25);--p:oklch(0.52 0.14 310)}
+</style>
+</helmet>
+<div style="display:flex;justify-content:center;padding:24px">
+<x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ isDark }}" hint-size="402px,874px">
+<div data-theme="{{ theme }}" style="height:100%;display:flex;flex-direction:column;background:var(--bg,#0E0F10);color:var(--tx,#E4E2DE);font-size:15px">
+
+  <sc-if value="{{ isHosts }}" hint-placeholder-val="{{ true }}">
+    <div data-screen-label="Mobile hosts" style="flex:1;min-height:0;overflow:auto;padding:62px 18px 20px;display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="font-size:30px;font-weight:600;letter-spacing:-0.6px">Hosts</div>
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--surf,#141517);border:1px solid var(--bd,#1d1e21);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--mu,#a9a7a2)">+</div>
+      </div>
+      <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Search hosts" style="height:40px;padding:0 14px;border-radius:11px;border:1px solid var(--bd,#1d1e21);background:var(--surf,#141517);color:var(--tx,#E4E2DE);font:inherit;font-size:15px;outline:none">
+      <div style="display:flex;gap:6px;overflow:auto">
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="4">
+          <span onClick="{{ c.pick }}" style="flex-shrink:0;height:32px;padding:0 13px;display:flex;align-items:center;border-radius:16px;font-size:13px;font-weight:500;cursor:pointer;background:{{ c.bg }};color:{{ c.fg }}">{{ c.label }}</span>
+        </sc-for>
+      </div>
+      <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="2">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px;padding:0 4px;font-size:12px;color:var(--dd,#5f5d59);font-weight:500;letter-spacing:0.4px;text-transform:uppercase"><span style="width:6px;height:6px;border-radius:2px;background:{{ sec.color }}"></span>{{ sec.name }}</div>
+          <div style="border-radius:14px;background:var(--surf,#141517);border:1px solid var(--bd,#1d1e21);overflow:hidden">
+            <sc-for list="{{ sec.hosts }}" as="h" hint-placeholder-count="3">
+              <div onClick="{{ h.connect }}" style="display:flex;align-items:center;gap:12px;min-height:60px;padding:0 14px;border-bottom:1px solid var(--bd2,#1a1b1e);cursor:pointer">
+                <div style="width:34px;height:34px;flex-shrink:0;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:11px;font-weight:600;background:{{ h.badgeBg }};color:{{ h.badgeFg }}">{{ h.osk }}</div>
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px">
+                  <span style="font-weight:500">{{ h.name }}</span>
+                  <span style="font-family:'Geist Mono',monospace;font-size:12px;color:var(--dm,#7d7b77);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ h.user }}@{{ h.addr }}</span>
+                </div>
+                <span style="display:flex;align-items:center;gap:6px;font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--dm,#7d7b77)"><span style="width:7px;height:7px;border-radius:50%;background:{{ h.dot }}"></span>{{ h.ping }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isTerm }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Mobile terminal" style="flex:1;min-height:0;display:flex;flex-direction:column;background:var(--term,#0B0C0D)">
+      <div style="padding:58px 14px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--bd2,#1a1b1e)">
+        <span onClick="{{ goHosts }}" style="font-size:15px;color:var(--g,oklch(0.80 0.13 160));cursor:pointer;min-width:60px">‹ Hosts</span>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:1px">
+          <span style="font-weight:600;font-size:15px">{{ host.name }}</span>
+          <span style="display:flex;align-items:center;gap:5px;font-family:'Geist Mono',monospace;font-size:10.5px;color:var(--dm,#7d7b77)"><span style="width:5px;height:5px;border-radius:50%;background:var(--g,oklch(0.80 0.13 160))"></span>{{ host.ping }}</span>
+        </div>
+        <span onClick="{{ goFiles }}" style="min-width:60px;text-align:right;font-size:15px;color:var(--g,oklch(0.80 0.13 160));cursor:pointer">Files</span>
+      </div>
+      <div ref="{{ termRef }}" onClick="{{ focusInput }}" style="flex:1;min-height:0;overflow:auto;padding:12px 14px;font-family:'Geist Mono',monospace;font-size:11.5px;line-height:1.6">
+        <sc-for list="{{ lines }}" as="ln" hint-placeholder-count="8">
+          <div style="white-space:pre-wrap;word-break:break-all;min-height:1.6em"><sc-for list="{{ ln.segs }}" as="s"><span style="color:{{ s.c }}">{{ s.t }}</span></sc-for></div>
+        </sc-for>
+        <div style="display:flex;white-space:pre">
+          <sc-for list="{{ promptSegs }}" as="s"><span style="color:{{ s.c }}">{{ s.t }}</span></sc-for>
+          <input ref="{{ inputRef }}" value="{{ input }}" onChange="{{ onInput }}" onKeyDown="{{ onKey }}" autocapitalize="off" spellcheck="false" autocomplete="off" style="flex:1;min-width:0;background:transparent;border:none;outline:none;padding:0;color:var(--tx,#E4E2DE);font:inherit;caret-color:var(--g,oklch(0.80 0.13 160))">
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;padding:8px 10px 34px;overflow:auto;border-top:1px solid var(--bd2,#1a1b1e);background:var(--bg,#0E0F10)">
+        <sc-for list="{{ keysBar }}" as="k" hint-placeholder-count="9">
+          <span onClick="{{ k.tap }}" style="flex-shrink:0;min-width:40px;height:36px;padding:0 10px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-family:'Geist Mono',monospace;font-size:12.5px;cursor:pointer;background:{{ k.bg }};color:{{ k.fg }};border:1px solid var(--bd,#1d1e21)">{{ k.label }}</span>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isFiles }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Mobile SFTP" style="flex:1;min-height:0;overflow:auto;padding:62px 18px 20px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div style="font-size:30px;font-weight:600;letter-spacing:-0.6px">Files</div>
+        <div style="font-family:'Geist Mono',monospace;font-size:12px;color:var(--dm,#7d7b77)">{{ host.name }}:/var/www/tern-site</div>
+      </div>
+      <div style="border-radius:14px;background:var(--surf,#141517);border:1px solid var(--bd,#1d1e21);overflow:hidden">
+        <sc-for list="{{ files }}" as="f" hint-placeholder-count="6">
+          <div style="display:flex;align-items:center;gap:12px;min-height:52px;padding:0 14px;border-bottom:1px solid var(--bd2,#1a1b1e)">
+            <span style="width:11px;height:11px;border-radius:{{ f.r }};background:{{ f.c }}"></span>
+            <span style="flex:1">{{ f.name }}</span>
+            <span style="font-family:'Geist Mono',monospace;font-size:12px;color:var(--dm,#7d7b77)">{{ f.size }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:14px;background:var(--surf,#141517);border:1px solid var(--bd,#1d1e21)">
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-family:'Geist Mono',monospace">↑ dist.tar.gz</span><span style="font-family:'Geist Mono',monospace;color:var(--dm,#7d7b77)">64%</span></div>
+        <div style="height:4px;border-radius:4px;background:var(--l3,#26272a);overflow:hidden"><div style="width:64%;height:100%;background:var(--g,oklch(0.80 0.13 160))"></div></div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isKeys }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Mobile keychain" style="flex:1;min-height:0;overflow:auto;padding:62px 18px 20px;display:flex;flex-direction:column;gap:14px">
+      <div style="font-size:30px;font-weight:600;letter-spacing:-0.6px">Keychain</div>
+      <div style="border-radius:14px;background:var(--surf,#141517);border:1px solid var(--bd,#1d1e21);overflow:hidden">
+        <sc-for list="{{ keys }}" as="k" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:6px;padding:14px;border-bottom:1px solid var(--bd2,#1a1b1e)">
+            <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:500;flex:1">{{ k.name }}</span><span style="height:20px;padding:0 7px;display:flex;align-items:center;border-radius:5px;font-family:'Geist Mono',monospace;font-size:10.5px;background:{{ k.bg }};color:{{ k.c }}">{{ k.type }}</span></div>
+            <span style="font-family:'Geist Mono',monospace;font-size:11px;color:var(--dm,#7d7b77);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ k.fp }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="height:48px;border-radius:12px;background:var(--tx,#E4E2DE);color:var(--bg,#0E0F10);display:flex;align-items:center;justify-content:center;font-weight:600">Generate key</div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Mobile settings" style="flex:1;min-height:0;overflow:auto;padding:62px 18px 20px;display:flex;flex-direction:column;gap:18px">
+      <div style="font-size:30px;font-weight:600;letter-spacing:-0.6px">Settings</div>
+      <sc-for list="{{ settings }}" as="sec" hint-placeholder-count="3">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="padding:0 4px;font-size:12px;color:var(--dd,#5f5d59);font-weight:500;letter-spacing:0.4px;text-transform:uppercase">{{ sec.title }}</div>
+          <div style="border-radius:14px;background:var(--surf,#141517);border:1px solid var(--bd,#1d1e21);overflow:hidden">
+            <sc-for list="{{ sec.rows }}" as="r" hint-placeholder-count="2">
+              <div onClick="{{ r.tap }}" style="display:flex;align-items:center;gap:12px;min-height:50px;padding:0 14px;border-bottom:1px solid var(--bd2,#1a1b1e);cursor:pointer">
+                <span style="flex:1">{{ r.label }}</span>
+                <span style="font-size:14px;color:var(--dm,#7d7b77)">{{ r.value }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showTabs }}" hint-placeholder-val="{{ true }}">
+    <div style="flex-shrink:0;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 8px 32px;border-top:1px solid var(--bd,#1d1e21);background:var(--bg,#0E0F10)">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+        <div onClick="{{ t.go }}" style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:6px 0;cursor:pointer">
+          <span style="width:22px;height:4px;border-radius:2px;background:{{ t.bar }}"></span>
+          <span style="font-size:11.5px;font-weight:500;color:{{ t.fg }}">{{ t.label }}</span>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+</div>
+</x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:450,&quot;height&quot;:922},&quot;screen&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;hosts&quot;,&quot;term&quot;,&quot;files&quot;,&quot;keys&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;hosts&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;,&quot;system&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const T='var(--tx,#E4E2DE)',D='var(--dm,#7d7b77)',M='var(--mu,#a9a7a2)',G='var(--g,oklch(0.80 0.13 160))',B='var(--b,oklch(0.80 0.11 245))',A='var(--a,oklch(0.82 0.12 80))',R='var(--r,oklch(0.72 0.14 25))',P='var(--p,oklch(0.78 0.11 310))';
+const sg=(t,c)=>({t,c:c||T});
+const ln=(...s)=>({segs:s.map(x=>typeof x==='string'?sg(x):Array.isArray(x)?sg(x[0],x[1]):x)});
+const OSC={UB:A,DB:R,AL:B,PI:P,TN:G};
+const GROUPS=[{name:'Production',color:R},{name:'Staging',color:A},{name:'Homelab',color:B}];
+const HOSTS=[
+{id:'h1',name:'api-prod-01',addr:'10.0.1.12',user:'deploy',os:'Ubuntu 24.04',osk:'UB',group:'Production',status:'online',ping:'23 ms'},
+{id:'h2',name:'api-prod-02',addr:'10.0.1.13',user:'deploy',os:'Ubuntu 24.04',osk:'UB',group:'Production',status:'online',ping:'25 ms'},
+{id:'h3',name:'db-primary',addr:'10.0.2.4',user:'postgres',os:'Debian 12',osk:'DB',group:'Production',status:'online',ping:'31 ms'},
+{id:'h5',name:'staging-web',addr:'10.8.0.21',user:'deploy',os:'Ubuntu 22.04',osk:'UB',group:'Staging',status:'idle',ping:'41 ms'},
+{id:'h6',name:'staging-worker',addr:'10.8.0.22',user:'deploy',os:'Ubuntu 22.04',osk:'UB',group:'Staging',status:'offline',ping:'—'},
+{id:'h7',name:'pi-hole',addr:'192.168.1.4',user:'pi',os:'Raspberry Pi OS',osk:'PI',group:'Homelab',status:'online',ping:'2 ms'},
+{id:'h8',name:'truenas',addr:'192.168.1.10',user:'root',os:'TrueNAS 24.04',osk:'TN',group:'Homelab',status:'online',ping:'1 ms'}];
+const stDot=s=>s==='online'?G:s==='idle'?A:'var(--off,#4a4946)';
+const prompt=h=>[sg(`${h.user}@${h.name}`,G),sg(':'),sg('~',B),sg('$ ')];
+const P2=h=>prompt(h).map(p=>[p.t,p.c]);
+const OUT={
+ 'ls':[ln(['app',B],'  ',['deploy.sh',G],'  compose.yml  ',['logs',B])],
+ 'uptime':[ln(' 18:51 up 5 days, 4:11, load 0.18 0.22 0.19')],
+ 'docker ps':[ln(['NAMES     STATUS',D]),ln('api       ',['Up 3 days',G]),ln('worker    ',['Up 3 days',G]),ln('redis     ',['Up 12 days',G])]};
+const welcome=h=>[ln([`Welcome to ${h.os}`,M]),ln([`Last login: Fri Sep 25 18:42 from 10.0.0.4`,D])];
+const FILES=[['releases','dir','—'],['shared','dir','—'],['current','link','→ 0925'],['index.html','file','18 KB'],['robots.txt','file','68 B'],['.htaccess','file','402 B']];
+const KEYS=[{name:'deploy-ed25519',type:'ED25519',fp:'SHA256:q3Fh8LmZp0vT2c7Yw1kRbN4xUa6s',c:G},{name:'yubikey-5c',type:'ECDSA-SK',fp:'SHA256:Vd7Qk2mPz8nL0tR5wXc3bY1hJ6g',c:B},{name:'homelab',type:'ED25519',fp:'SHA256:Lp4Tn9Xe2Wq7Kc1Zr6Mb3Vy8Hd5',c:G}];
+const hostById=id=>HOSTS.find(h=>h.id===id);
+const badge=h=>({badgeBg:`color-mix(in oklch, ${OSC[h.osk]} 16%, transparent)`,badgeFg:OSC[h.osk]});
+
+class Component extends DCLogic {
+  termRef=React.createRef(); inputRef=React.createRef();
+  constructor(p){super(p);const h=HOSTS[0];
+    this.state={screen:p.screen??'hosts',theme:p.theme??'dark',hostId:'h1',group:'All',query:'',input:'',ctrl:false,
+      lines:[...welcome(h),ln(...P2(h),'docker ps'),...OUT['docker ps']]};}
+  componentDidUpdate(pp){
+    const ps=this._prev||{};pp=this._pp||this.props;this._pp=this.props;this._prev={lines:this.state.lines,screen:this.state.screen};
+    const up={};if(pp.theme!==this.props.theme&&this.props.theme)up.theme=this.props.theme;
+    if(pp.screen!==this.props.screen&&this.props.screen)up.screen=this.props.screen;
+    if(Object.keys(up).length)this.setState(up);
+    if(ps.lines!==this.state.lines||ps.screen!==this.state.screen)setTimeout(()=>{const el=this.termRef.current;if(el)el.scrollTop=el.scrollHeight;},0);
+  }
+  connect=id=>{const h=hostById(id);this.setState(s=>id===s.hostId?{screen:'term'}:{screen:'term',hostId:id,lines:welcome(h)});};
+  run=cmd=>{const h=hostById(this.state.hostId),c=cmd.trim();
+    if(c==='clear')return this.setState({lines:[],input:''});
+    const o=OUT[c]||(c?[ln([`${c.split(' ')[0]}: output not simulated`,D])]:[]);
+    this.setState(s=>({input:'',lines:[...s.lines,ln(...P2(h),cmd),...o]}));};
+  renderVals(){
+    const s=this.state,sc=s.screen,h=hostById(s.hostId),q=s.query.toLowerCase();
+    const sections=GROUPS.filter(g=>s.group==='All'||s.group===g.name).map(g=>({...g,hosts:HOSTS.filter(x=>x.group===g.name&&(!q||(x.name+x.addr).toLowerCase().includes(q))).map(x=>({...x,...badge(x),dot:stDot(x.status),connect:()=>this.connect(x.id)}))})).filter(g=>g.hosts.length);
+    const chips=['All',...GROUPS.map(g=>g.name)].map(c=>({label:c,bg:s.group===c?T:'var(--surf,#141517)',fg:s.group===c?'var(--bg,#0E0F10)':M,pick:()=>this.setState({group:c})}));
+    const tabs=[['hosts','Hosts'],['term','Terminal'],['files','Files'],['keys','Keys'],['settings','Settings']].map(([k,l])=>({label:l,fg:sc===k?T:D,bar:sc===k?G:'transparent',go:()=>this.setState({screen:k})}));
+    const keysBar=['esc','tab','ctrl','↑','↓','←','→','|','~','/','-'].map(k=>({label:k,bg:k==='ctrl'&&s.ctrl?G:'var(--surf,#141517)',fg:k==='ctrl'&&s.ctrl?'var(--term,#0B0C0D)':M,
+      tap:()=>{if(k==='ctrl')return this.setState(st=>({ctrl:!st.ctrl}));if(k==='tab'&&s.input==='l')return this.setState({input:'ls'});if(k.length===1&&'|~/-'.includes(k))this.setState(st=>({input:st.input+k}));this.inputRef.current?.focus();}}));
+    const theme=s.theme==='system'?(window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):s.theme;
+    return{
+      theme,isDark:theme==='dark',
+      isHosts:sc==='hosts',isTerm:sc==='term',isFiles:sc==='files',isKeys:sc==='keys',isSettings:sc==='settings',showTabs:sc!=='term',
+      sections,chips,tabs,keysBar,host:h,query:s.query,onQuery:e=>this.setState({query:e.target.value}),
+      lines:s.lines,promptSegs:prompt(h),input:s.input,termRef:this.termRef,inputRef:this.inputRef,
+      onInput:e=>this.setState({input:e.target.value}),
+      onKey:e=>{if(e.key==='Enter')this.run(s.input);},
+      focusInput:()=>this.inputRef.current?.focus(),
+      goHosts:()=>this.setState({screen:'hosts'}),goFiles:()=>this.setState({screen:'files'}),
+      files:FILES.map(([name,k,size])=>({name,size,r:k==='file'?'50%':'3px',c:k==='dir'?B:k==='link'?P:'var(--off,#4a4946)'})),
+      keys:KEYS.map(k=>({...k,bg:`color-mix(in oklch, ${k.c} 14%, transparent)`})),
+      settings:[
+        {title:'Appearance',rows:[{label:'Theme',value:theme==='dark'?'Dark':'Light',tap:()=>this.setState({theme:theme==='dark'?'light':'dark'})},{label:'Terminal font',value:'Geist Mono 11.5'}]},
+        {title:'Vault',rows:[{label:'Sync with git',value:'On'},{label:'Face ID unlock',value:'On'},{label:'Lock when idle',value:'15 min'}]},
+        {title:'About',rows:[{label:'Tern 0.4.2',value:'MIT'}]}]
+    };
+  }
+}
+</script>
+</body>
+</html>

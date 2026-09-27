@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>html,body{margin:0;background:#1a1a19;font-family:'Geist',system-ui,sans-serif;color:#E4E2DE}a{color:oklch(0.80 0.13 160)}a:hover{color:#fff}</style>
+</helmet>
+<section style="padding:64px 64px 0;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="font-size:28px;font-weight:600;letter-spacing:-0.5px">Focus · just the terminal</div>
+    <div style="color:#9a9893;font-size:15px">No sidebar, header or status bar. Session tabs sit on the terminal itself. ⌘K opens hosts, snippets and every other view.</div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:40px">
+    <div id="2a" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:'Geist Mono',monospace;font-size:13px;padding:3px 8px;border-radius:6px;background:oklch(0.80 0.13 160);color:#0B0C0D;font-weight:500">2a</span><span style="font-weight:500">Focus, dark</span><span style="color:#9a9893">Two sessions open.</span></div>
+      <div style="width:1280px;height:800px;border-radius:12px;overflow:hidden;border:1px solid #2a2a29;box-shadow:0 30px 80px rgba(0,0,0,0.4)">
+        <dc-import name="Tern" embedded="{{ true }}" layout="focus" start-view="terminal" style="width:100%;height:100%" hint-size="1280px,800px"></dc-import>
+      </div>
+    </div>
+    <div id="2b" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:'Geist Mono',monospace;font-size:13px;padding:3px 8px;border-radius:6px;background:oklch(0.80 0.13 160);color:#0B0C0D;font-weight:500">2b</span><span style="font-weight:500">Focus, split</span><span style="color:#9a9893">htop in the right pane.</span></div>
+      <div style="width:1280px;height:800px;border-radius:12px;overflow:hidden;border:1px solid #2a2a29;box-shadow:0 30px 80px rgba(0,0,0,0.4)">
+        <dc-import name="Tern" embedded="{{ true }}" layout="focus" start-view="terminal" split-default="{{ true }}" style="width:100%;height:100%" hint-size="1280px,800px"></dc-import>
+      </div>
+    </div>
+    <div id="2c" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:'Geist Mono',monospace;font-size:13px;padding:3px 8px;border-radius:6px;background:oklch(0.80 0.13 160);color:#0B0C0D;font-weight:500">2c</span><span style="font-weight:500">Focus, light</span><span style="color:#9a9893">Same layout on the light theme.</span></div>
+      <div style="width:1280px;height:800px;border-radius:12px;overflow:hidden;border:1px solid #2a2a29;box-shadow:0 30px 80px rgba(0,0,0,0.4)">
+        <dc-import name="Tern" embedded="{{ true }}" layout="focus" theme="light" start-view="terminal" style="width:100%;height:100%" hint-size="1280px,800px"></dc-import>
+      </div>
+    </div>
+  </div>
+</section>
+<section style="padding:64px;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="font-size:28px;font-weight:600;letter-spacing:-0.5px">Desktop · three layout directions</div>
+    <div style="color:#9a9893;font-size:15px">All three are live. Click hosts, run commands, press ⌘K. Layout and theme can also be switched in Settings.</div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:40px">
+    <div id="1a" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:'Geist Mono',monospace;font-size:13px;padding:3px 8px;border-radius:6px;background:oklch(0.80 0.13 160);color:#0B0C0D;font-weight:500">1a</span><span style="font-weight:500">Sidebar</span><span style="color:#9a9893">Navigation, groups and vault status in a left sidebar. Sessions as tabs.</span></div>
+      <div style="width:1280px;height:800px;border-radius:12px;overflow:hidden;border:1px solid #2a2a29;box-shadow:0 30px 80px rgba(0,0,0,0.4)">
+        <dc-import name="Tern" embedded="{{ true }}" layout="sidebar" start-view="terminal" style="width:100%;height:100%" hint-size="1280px,800px"></dc-import>
+      </div>
+    </div>
+    <div id="1b" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:'Geist Mono',monospace;font-size:13px;padding:3px 8px;border-radius:6px;background:oklch(0.80 0.13 160);color:#0B0C0D;font-weight:500">1b</span><span style="font-weight:500">Rail + host list</span><span style="color:#9a9893">Icon rail, with every host one click away beside the terminal.</span></div>
+      <div style="width:1280px;height:800px;border-radius:12px;overflow:hidden;border:1px solid #2a2a29;box-shadow:0 30px 80px rgba(0,0,0,0.4)">
+        <dc-import name="Tern" embedded="{{ true }}" layout="rail" start-view="terminal" split-default="{{ true }}" style="width:100%;height:100%" hint-size="1280px,800px"></dc-import>
+      </div>
+    </div>
+    <div id="1c" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:'Geist Mono',monospace;font-size:13px;padding:3px 8px;border-radius:6px;background:oklch(0.80 0.13 160);color:#0B0C0D;font-weight:500">1c</span><span style="font-weight:500">Minimal top bar</span><span style="color:#9a9893">No sidebar. Views and sessions share one bar; ⌘K does the rest.</span></div>
+      <div style="width:1280px;height:800px;border-radius:12px;overflow:hidden;border:1px solid #2a2a29;box-shadow:0 30px 80px rgba(0,0,0,0.4)">
+        <dc-import name="Tern" embedded="{{ true }}" layout="minimal" start-view="hosts" style="width:100%;height:100%" hint-size="1280px,800px"></dc-import>
+      </div>
+    </div>
+    <div id="1d" style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:'Geist Mono',monospace;font-size:13px;padding:3px 8px;border-radius:6px;background:oklch(0.80 0.13 160);color:#0B0C0D;font-weight:500">1d</span><span style="font-weight:500">Light theme</span><span style="color:#9a9893">Sidebar layout, Settings view.</span></div>
+      <div style="width:1280px;height:800px;border-radius:12px;overflow:hidden;border:1px solid #2a2a29;box-shadow:0 30px 80px rgba(0,0,0,0.4)">
+        <dc-import name="Tern" embedded="{{ true }}" layout="sidebar" theme="light" start-view="settings" style="width:100%;height:100%" hint-size="1280px,800px"></dc-import>
+      </div>
+    </div>
+  </div>
+</section>
+<section style="padding:0 64px 80px;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="font-size:28px;font-weight:600;letter-spacing:-0.5px">Mobile</div>
+    <div style="color:#9a9893;font-size:15px">Tap a host to open a session. The key bar adds esc, tab, ctrl and arrows.</div>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:8px">
+    <dc-import name="Tern Mobile" screen="hosts" theme="dark" hint-size="450px,922px"></dc-import>
+    <dc-import name="Tern Mobile" screen="term" theme="dark" hint-size="450px,922px"></dc-import>
+    <dc-import name="Tern Mobile" screen="files" theme="dark" hint-size="450px,922px"></dc-import>
+    <dc-import name="Tern Mobile" screen="hosts" theme="light" hint-size="450px,922px"></dc-import>
+    <dc-import name="Tern Mobile" screen="term" theme="light" hint-size="450px,922px"></dc-import>
+  </div>
+</section>
+</x-dc>
+</body>
+</html>

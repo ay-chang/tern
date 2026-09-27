@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;background:var(--bg,#0E0F10);color:var(--tx,#E4E2DE);font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:var(--g,oklch(0.80 0.13 160));text-decoration:none}a:hover{color:var(--tx,#E4E2DE)}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:var(--l3,#26272a);border-radius:8px}::-webkit-scrollbar-track{background:transparent}
+input::placeholder{color:var(--dd,#5f5d59)}
+[data-theme=dark]{--bg:#16171A;--side:#191A1D;--surf:#1C1D20;--s1:#1F2023;--hov:#222326;--sel:#27282C;--bd:#28292D;--bd2:#222326;--l1:#2A2B2F;--l2:#2D2E32;--l3:#333438;--l4:#3C3D42;--l5:#4B4C51;--term:#131416}
+[data-theme=light]{--bg:#F7F6F3;--side:#F1F0EC;--surf:#FFFFFF;--s1:#FFFFFF;--hov:#F4F3EF;--sel:#E8E7E2;--bd:#E3E1DC;--bd2:#ECEAE6;--l1:#E6E4DF;--l2:#DEDCD7;--l3:#D5D3CE;--l4:#C6C4BF;--l5:#AEACA7;--term:#FCFBF9;--tx:#1C1B19;--mu:#4E4C48;--dm:#6B6965;--dd:#8B8985;--off:#B8B6B1;--tdim:#8B8985;--hi:#000;--g:oklch(0.52 0.12 160);--g2:oklch(0.46 0.12 160);--b:oklch(0.52 0.13 250);--a:oklch(0.58 0.13 65);--r:oklch(0.55 0.16 25);--p:oklch(0.52 0.14 310)}
+</style>
+</helmet>
+<div data-theme="{{ theme }}" style="position:relative;display:flex;height:{{ rootH }};min-width:1180px;overflow:hidden;background:var(--bg,#0E0F10);color:var(--tx,#E4E2DE);font-size:13px">
+
+  <sc-if value="{{ sideOpen }}" hint-placeholder-val="{{ true }}">
+  <aside data-screen-label="Sidebar" style="width:236px;flex-shrink:0;background:var(--side,#111213);border-right:1px solid var(--bd,#1d1e21);display:flex;flex-direction:column;padding:16px 10px 12px;gap:20px">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 6px">
+      <div style="width:24px;height:24px;border-radius:7px;background:var(--g,oklch(0.80 0.13 160));color:var(--term,#0B0C0D);display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:11px;font-weight:600;letter-spacing:-0.5px">›_</div>
+      <div style="font-weight:600;font-size:15px;letter-spacing:-0.2px">Tern</div>
+      <span onClick="{{ toggleSide }}" title="Hide sidebar (⌘B)" style="margin-left:auto;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--dm,#7d7b77)" style-hover="background:var(--s1,#17181a);color:var(--tx,#E4E2DE)"><span style="width:15px;height:12px;border:1.5px solid currentColor;border-radius:3px;display:flex"><span style="width:4px;height:100%;border-right:1.5px solid currentColor"></span></span></span>
+    </div>
+    <button onClick="{{ openPalette }}" style="display:flex;align-items:center;gap:8px;height:32px;padding:0 10px;background:var(--s1,#17181a);border:1px solid var(--l2,#222326);border-radius:8px;color:var(--dm,#7d7b77);font:inherit;font-size:12.5px;cursor:pointer;text-align:left" style-hover="border-color:var(--l4,#2e2f33);color:var(--mu,#a9a7a2)">
+      <span style="flex:1">Search or jump to…</span>
+      <span style="font-family:'Geist Mono',monospace;font-size:11px;color:var(--dd,#5f5d59)">⌘K</span>
+    </button>
+    <nav style="display:flex;flex-direction:column;gap:2px">
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+        <div onClick="{{ n.go }}" style="display:flex;align-items:center;gap:10px;height:32px;padding:0 10px;border-radius:7px;cursor:pointer;background:{{ n.bg }};color:{{ n.fg }}" style-hover="color:var(--tx,#E4E2DE)">
+          <span style="flex:1;font-weight:500">{{ n.label }}</span>
+          <span style="font-family:'Geist Mono',monospace;font-size:11px;color:var(--dd,#5f5d59)">{{ n.count }}</span>
+        </div>
+      </sc-for>
+    </nav>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <div style="padding:0 10px 6px;font-size:11px;color:var(--dd,#5f5d59);font-weight:500;letter-spacing:0.4px;text-transform:uppercase">Groups</div>
+      <sc-for list="{{ groupNav }}" as="g" hint-placeholder-count="3">
+        <div onClick="{{ g.go }}" style="display:flex;align-items:center;gap:10px;height:30px;padding:0 10px;border-radius:7px;cursor:pointer;background:{{ g.bg }};color:{{ g.fg }}" style-hover="color:var(--tx,#E4E2DE)">
+          <span style="width:7px;height:7px;border-radius:2px;background:{{ g.color }}"></span>
+          <span style="flex:1">{{ g.name }}</span>
+          <span style="font-family:'Geist Mono',monospace;font-size:11px;color:var(--dd,#5f5d59)">{{ g.count }}</span>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--bd,#1d1e21);border-radius:10px;background:var(--surf,#141517)">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="width:7px;height:7px;border-radius:50%;background:var(--g,oklch(0.80 0.13 160))"></span>
+        <span style="font-weight:500">Local vault</span>
+        <span style="margin-left:auto;font-family:'Geist Mono',monospace;font-size:10.5px;color:var(--dd,#5f5d59)">AES-256</span>
+      </div>
+      <div style="color:var(--dm,#7d7b77);font-size:12px;line-height:1.45">Synced to <span style="font-family:'Geist Mono',monospace;color:var(--mu,#a9a7a2)">git@github.com:you/vault</span> 4 min ago</div>
+    </div>
+  </aside>
+  </sc-if>
+  <sc-if value="{{ isRail }}" hint-placeholder-val="{{ false }}">
+    <aside data-screen-label="Rail" style="width:58px;flex-shrink:0;background:var(--side,#111213);border-right:1px solid var(--bd,#1d1e21);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:6px">
+      <div style="width:28px;height:28px;margin-bottom:12px;border-radius:8px;background:var(--g,oklch(0.80 0.13 160));color:var(--term,#0B0C0D);display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:12px;font-weight:600;letter-spacing:-0.5px">›_</div>
+      <sc-for list="{{ nav }}" as="n" hint-placeholder-count="6">
+        <div onClick="{{ n.go }}" title="{{ n.label }}" style="width:36px;height:36px;flex-shrink:0;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:'Geist Mono',monospace;font-size:12.5px;font-weight:600;margin-top:{{ n.mt }};background:{{ n.bg }};color:{{ n.fg }}" style-hover="color:var(--tx,#E4E2DE)">{{ n.abbr }}</div>
+      </sc-for>
+    </aside>
+    <aside data-screen-label="Host column" style="width:258px;flex-shrink:0;background:var(--bg,#0E0F10);border-right:1px solid var(--bd,#1d1e21);display:flex;flex-direction:column">
+      <div style="height:46px;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:0 16px;border-bottom:1px solid var(--bd,#1d1e21)">
+        <span style="font-weight:600">Tern</span>
+        <span onClick="{{ openPalette }}" style="margin-left:auto;height:24px;padding:0 8px;display:flex;align-items:center;border-radius:6px;border:1px solid var(--l2,#222326);font-family:'Geist Mono',monospace;font-size:11px;color:var(--dm,#7d7b77);cursor:pointer" style-hover="color:var(--tx,#E4E2DE)">⌘K</span>
+      </div>
+      <div style="padding:12px 12px 4px">
+        <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Filter hosts" style="width:100%;height:30px;padding:0 10px;background:var(--surf,#141517);border:1px solid var(--l2,#222326);border-radius:7px;color:var(--tx,#E4E2DE);font:inherit;font-size:12.5px;outline:none">
+      </div>
+      <div style="flex:1;overflow:auto;padding:8px 8px 16px;display:flex;flex-direction:column;gap:14px">
+        <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;gap:1px">
+            <div style="display:flex;align-items:center;gap:8px;padding:4px 8px 6px;font-size:11px;color:var(--dd,#5f5d59);font-weight:500;letter-spacing:0.4px;text-transform:uppercase"><span style="width:6px;height:6px;border-radius:2px;background:{{ sec.color }}"></span>{{ sec.name }}</div>
+            <sc-for list="{{ sec.hosts }}" as="h" hint-placeholder-count="3">
+              <div onClick="{{ h.connect }}" style="display:flex;align-items:center;gap:10px;height:40px;padding:0 8px;border-radius:7px;cursor:pointer;background:{{ h.rowBg }}" style-hover="background:var(--hov,#18191b)">
+                <div style="width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:9.5px;font-weight:600;background:{{ h.badgeBg }};color:{{ h.badgeFg }}">{{ h.osk }}</div>
+                <div style="display:flex;flex-direction:column;gap:1px;min-width:0;flex:1">
+                  <span style="font-size:12.5px;font-weight:500">{{ h.name }}</span>
+                  <span style="font-family:'Geist Mono',monospace;font-size:10.5px;color:var(--dm,#7d7b77);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ h.addr }}</span>
+                </div>
+                <span style="width:6px;height:6px;border-radius:50%;background:{{ h.dot }}"></span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-for>
+      </div>
+    </aside>
+  </sc-if>
+
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column">
+    <div style="height:46px;flex-shrink:0;display:flex;align-items:center;gap:4px;padding:0 10px;border-bottom:1px solid {{ topBd }};background:{{ topBg }}">
+      <sc-if value="{{ sideClosed }}" hint-placeholder-val="{{ false }}">
+        <span onClick="{{ toggleSide }}" title="Show sidebar (⌘B)" style="width:30px;height:30px;margin-right:6px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--dm,#7d7b77)" style-hover="background:var(--s1,#17181a);color:var(--tx,#E4E2DE)"><span style="width:15px;height:12px;border:1.5px solid currentColor;border-radius:3px;display:flex"><span style="width:4px;height:100%;border-right:1.5px solid currentColor"></span></span></span>
+      </sc-if>
+      <sc-if value="{{ isMinimal }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:10px;padding:0 10px 0 6px">
+          <div style="width:22px;height:22px;border-radius:6px;background:var(--g,oklch(0.80 0.13 160));color:var(--term,#0B0C0D);display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:10px;font-weight:600;letter-spacing:-0.5px">›_</div>
+          <span style="font-weight:600">Tern</span>
+        </div>
+        <div style="display:flex;gap:2px">
+          <sc-for list="{{ nav }}" as="n" hint-placeholder-count="6">
+            <span onClick="{{ n.go }}" style="height:30px;padding:0 10px;display:flex;align-items:center;border-radius:7px;cursor:pointer;font-weight:500;background:{{ n.bg }};color:{{ n.fg }}" style-hover="color:var(--tx,#E4E2DE)">{{ n.label }}</span>
+          </sc-for>
+        </div>
+        <span style="width:1px;height:18px;background:var(--l3,#26272a);margin:0 8px"></span>
+      </sc-if>
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="2">
+        <div onClick="{{ t.go }}" style="display:flex;align-items:center;gap:8px;height:30px;padding:0 8px 0 12px;border-radius:7px;cursor:pointer;background:{{ t.bg }};color:{{ t.fg }};font-family:'Geist Mono',monospace;font-size:12px" style-hover="color:var(--tx,#E4E2DE)">
+          <span style="width:6px;height:6px;border-radius:50%;background:{{ t.dot }}"></span>
+          <span>{{ t.label }}</span>
+          <span onClick="{{ t.close }}" style="width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--dd,#5f5d59);font-size:13px" style-hover="background:var(--l3,#26272a);color:var(--tx,#E4E2DE)">×</span>
+        </div>
+      </sc-for>
+      <button onClick="{{ openPalette }}" style="width:30px;height:30px;border:none;background:transparent;color:var(--dm,#7d7b77);border-radius:7px;font-size:17px;cursor:pointer" style-hover="background:var(--s1,#17181a);color:var(--tx,#E4E2DE)">+</button>
+      <sc-if value="{{ isFocus }}" hint-placeholder-val="{{ false }}">
+        <span onClick="{{ openPalette }}" style="margin-left:auto;height:26px;padding:0 10px;display:flex;align-items:center;gap:8px;border-radius:6px;cursor:pointer;font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--dd,#5f5d59)" style-hover="color:var(--mu,#a9a7a2);background:var(--s1,#17181a)">⌘K</span>
+      </sc-if>
+      <sc-if value="{{ isMinimal }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ openPalette }}" style="margin-left:auto;display:flex;align-items:center;gap:24px;height:30px;padding:0 10px;background:var(--s1,#17181a);border:1px solid var(--l2,#222326);border-radius:8px;color:var(--dm,#7d7b77);font:inherit;font-size:12.5px;cursor:pointer" style-hover="color:var(--mu,#a9a7a2)"><span>Search or jump to…</span><span style="font-family:'Geist Mono',monospace;font-size:11px;color:var(--dd,#5f5d59)">⌘K</span></button>
+      </sc-if>
+    </div>
+
+    <sc-if value="{{ isHosts }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Hosts" style="flex:1;min-height:0;display:flex">
+        <div style="flex:1;min-width:0;overflow:auto;padding:28px 32px 40px;display:flex;flex-direction:column;gap:28px">
+          <div style="display:flex;align-items:flex-end;gap:16px">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:22px;font-weight:600;letter-spacing:-0.4px">Hosts</div>
+              <div style="color:var(--dm,#7d7b77)">{{ hostSummary }}</div>
+            </div>
+            <input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Filter by name, address, tag" style="margin-left:auto;width:280px;height:34px;padding:0 12px;background:var(--surf,#141517);border:1px solid var(--l2,#222326);border-radius:8px;color:var(--tx,#E4E2DE);font:inherit;outline:none">
+            <button onClick="{{ newHost }}" style="height:34px;padding:0 14px;border:none;border-radius:8px;background:var(--tx,#E4E2DE);color:var(--bg,#0E0F10);font:inherit;font-weight:500;cursor:pointer" style-hover="background:var(--hi,#fff)">New host</button>
+          </div>
+          <sc-for list="{{ sections }}" as="sec" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;align-items:center;gap:8px;color:var(--mu,#a9a7a2);font-weight:500">
+                <span style="width:7px;height:7px;border-radius:2px;background:{{ sec.color }}"></span>
+                <span>{{ sec.name }}</span>
+                <span style="font-family:'Geist Mono',monospace;font-size:11px;color:var(--dd,#5f5d59)">{{ sec.count }}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px">
+                <sc-for list="{{ sec.hosts }}" as="h" hint-placeholder-count="3">
+                  <div onClick="{{ h.select }}" onDoubleClick="{{ h.connect }}" style="display:flex;flex-direction:column;gap:14px;padding:14px;border-radius:11px;cursor:pointer;background:{{ h.cardBg }};border:1px solid {{ h.border }}" style-hover="background:var(--hov,#18191b)">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <div style="width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:11px;font-weight:600;background:{{ h.badgeBg }};color:{{ h.badgeFg }}">{{ h.osk }}</div>
+                      <div style="display:flex;flex-direction:column;gap:3px;min-width:0">
+                        <div style="font-weight:500;font-size:13.5px">{{ h.name }}</div>
+                        <div style="font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--dm,#7d7b77);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ h.user }}@{{ h.addr }}</div>
+                      </div>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px">
+                      <sc-for list="{{ h.tags }}" as="tag" hint-placeholder-count="1">
+                        <span style="height:20px;padding:0 7px;display:flex;align-items:center;border-radius:5px;background:var(--sel,#1c1d20);color:var(--mu,#a9a7a2);font-size:11px">{{ tag }}</span>
+                      </sc-for>
+                      <span style="margin-left:auto;display:flex;align-items:center;gap:6px;font-family:'Geist Mono',monospace;font-size:11px;color:var(--dm,#7d7b77)">
+                        <span style="width:6px;height:6px;border-radius:50%;background:{{ h.dot }}"></span>{{ h.statusText }}
+                      </span>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ noResults }}" hint-placeholder-val="{{ false }}">
+            <div style="color:var(--dm,#7d7b77);padding:40px 0">No hosts match “{{ query }}”.</div>
+          </sc-if>
+        </div>
+
+        <sc-if value="{{ hasSel }}" hint-placeholder-val="{{ false }}">
+          <div style="width:330px;flex-shrink:0;border-left:1px solid var(--bd,#1d1e21);background:var(--side,#111213);overflow:auto;padding:24px;display:flex;flex-direction:column;gap:24px">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div style="width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:12px;font-weight:600;background:{{ sel.badgeBg }};color:{{ sel.badgeFg }}">{{ sel.osk }}</div>
+              <div style="display:flex;flex-direction:column;gap:4px;min-width:0">
+                <div style="font-size:16px;font-weight:600">{{ sel.name }}</div>
+                <div style="display:flex;align-items:center;gap:6px;color:var(--dm,#7d7b77);font-size:12px"><span style="width:6px;height:6px;border-radius:50%;background:{{ sel.dot }}"></span>{{ sel.statusLong }}</div>
+              </div>
+              <span onClick="{{ closeSel }}" style="margin-left:auto;align-self:flex-start;width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--dd,#5f5d59);cursor:pointer;font-size:15px" style-hover="background:var(--sel,#1c1d20);color:var(--tx,#E4E2DE)">×</span>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button onClick="{{ sel.connect }}" style="flex:1;height:36px;border:none;border-radius:8px;background:var(--g,oklch(0.80 0.13 160));color:var(--term,#0B0C0D);font:inherit;font-weight:600;cursor:pointer" style-hover="background:var(--g2,oklch(0.85 0.13 160))">Connect</button>
+              <button onClick="{{ sel.sftp }}" style="height:36px;padding:0 14px;border:1px solid var(--l3,#26272a);border-radius:8px;background:transparent;color:var(--tx,#E4E2DE);font:inherit;font-weight:500;cursor:pointer" style-hover="background:var(--sel,#1c1d20)">SFTP</button>
+            </div>
+            <div style="display:flex;flex-direction:column;border:1px solid var(--bd,#1d1e21);border-radius:10px;overflow:hidden">
+              <sc-for list="{{ sel.fields }}" as="f" hint-placeholder-count="6">
+                <div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid var(--bd2,#1a1b1e)">
+                  <span style="width:84px;color:var(--dm,#7d7b77);font-size:12px">{{ f.k }}</span>
+                  <span style="flex:1;font-family:'Geist Mono',monospace;font-size:12px;color:var(--tx,#E4E2DE);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.v }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font-size:11px;color:var(--dd,#5f5d59);font-weight:500;letter-spacing:0.4px;text-transform:uppercase">Recent sessions</div>
+              <sc-for list="{{ sel.history }}" as="r" hint-placeholder-count="3">
+                <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mu,#a9a7a2)"><span>{{ r.when }}</span><span style="font-family:'Geist Mono',monospace;color:var(--dm,#7d7b77)">{{ r.dur }}</span></div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isTerm }}" hint-placeholder-val="{{ true }}">
+      <div data-screen-label="Terminal" style="flex:1;min-height:0;display:flex;flex-direction:column;background:var(--term,#0B0C0D)">
+        <sc-if value="{{ termChrome }}" hint-placeholder-val="{{ true }}">
+        <div style="height:44px;flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 14px 0 20px;border-bottom:1px solid var(--bd2,#1a1b1e)">
+          <div style="width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:9.5px;font-weight:600;background:{{ th.badgeBg }};color:{{ th.badgeFg }}">{{ th.osk }}</div>
+          <span style="font-weight:500">{{ th.name }}</span>
+          <span style="font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--dd,#5f5d59)">{{ th.os }}</span>
+          <div style="margin-left:auto;display:flex;gap:4px">
+            <button onClick="{{ toggleSplit }}" style="height:28px;padding:0 10px;border:none;border-radius:6px;font:inherit;font-size:12px;cursor:pointer;background:{{ splitBg }};color:{{ splitFg }}" style-hover="color:var(--tx,#E4E2DE)">Split</button>
+            <button onClick="{{ toggleSnippets }}" style="height:28px;padding:0 10px;border:none;border-radius:6px;font:inherit;font-size:12px;cursor:pointer;background:{{ snipBg }};color:{{ snipFg }}" style-hover="color:var(--tx,#E4E2DE)">Snippets</button>
+            <button onClick="{{ th.sftp }}" style="height:28px;padding:0 10px;border:none;border-radius:6px;font:inherit;font-size:12px;cursor:pointer;background:transparent;color:var(--dm,#7d7b77)" style-hover="color:var(--tx,#E4E2DE)">SFTP</button>
+          </div>
+        </div>
+        </sc-if>
+        <div style="flex:1;min-height:0;display:flex">
+          <div style="flex:1;min-width:0;display:flex;gap:1px;background:var(--bd2,#1a1b1e)">
+            <div ref="{{ termRef }}" onClick="{{ focusInput }}" style="flex:1;min-width:0;overflow:auto;background:var(--term,#0B0C0D);padding:{{ termPad }};font-family:'Geist Mono',monospace;font-size:{{ termFont }};line-height:1.6;cursor:text">
+              <sc-for list="{{ lines }}" as="ln" hint-placeholder-count="8">
+                <div style="white-space:pre-wrap;word-break:break-all;min-height:1.6em"><sc-for list="{{ ln.segs }}" as="s"><span style="color:{{ s.c }}">{{ s.t }}</span></sc-for></div>
+              </sc-for>
+              <div style="display:flex;white-space:pre">
+                <sc-for list="{{ promptSegs }}" as="s"><span style="color:{{ s.c }}">{{ s.t }}</span></sc-for>
+                <input ref="{{ inputRef }}" value="{{ termInput }}" onChange="{{ onTermInput }}" onKeyDown="{{ onTermKey }}" spellcheck="false" autocomplete="off" style="flex:1;min-width:0;background:transparent;border:none;outline:none;padding:0;color:var(--tx,#E4E2DE);font:inherit;caret-color:var(--g,oklch(0.80 0.13 160))">
+              </div>
+            </div>
+            <sc-if value="{{ split }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;min-width:0;overflow:auto;background:var(--term,#0B0C0D);padding:{{ termPad }};font-family:'Geist Mono',monospace;font-size:{{ termFont }};line-height:1.6">
+                <sc-for list="{{ topLines }}" as="ln" hint-placeholder-count="8">
+                  <div style="white-space:pre;min-height:1.6em"><sc-for list="{{ ln.segs }}" as="s"><span style="color:{{ s.c }}">{{ s.t }}</span></sc-for></div>
+                </sc-for>
+              </div>
+            </sc-if>
+          </div>
+          <sc-if value="{{ snippetsOpen }}" hint-placeholder-val="{{ false }}">
+            <div style="width:280px;flex-shrink:0;border-left:1px solid var(--bd2,#1a1b1e);background:var(--bg,#0E0F10);overflow:auto;padding:16px 12px;display:flex;flex-direction:column;gap:6px">
+              <div style="padding:0 6px 8px;display:flex;justify-content:space-between;align-items:center"><span style="font-weight:500">Snippets</span><span style="font-size:11.5px;color:var(--dd,#5f5d59)">Click to run</span></div>
+              <sc-for list="{{ snippets }}" as="sn" hint-placeholder-count="5">
+                <div onClick="{{ sn.run }}" style="display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:8px;cursor:pointer" style-hover="background:var(--s1,#17181a)">
+                  <span style="font-size:12.5px;font-weight:500">{{ sn.name }}</span>
+                  <span style="font-family:'Geist Mono',monospace;font-size:11px;color:var(--dm,#7d7b77);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ sn.cmd }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+        <sc-if value="{{ termChrome }}" hint-placeholder-val="{{ true }}">
+        <div style="height:28px;flex-shrink:0;display:flex;align-items:center;gap:18px;padding:0 20px;border-top:1px solid var(--bd2,#1a1b1e);background:var(--bg,#0E0F10);font-family:'Geist Mono',monospace;font-size:11px;color:var(--dm,#7d7b77)">
+          <span style="display:flex;align-items:center;gap:6px;color:var(--g,oklch(0.80 0.13 160))"><span style="width:6px;height:6px;border-radius:50%;background:var(--g,oklch(0.80 0.13 160))"></span>connected</span>
+          <span>{{ th.user }}@{{ th.addr }}:{{ th.port }}</span>
+          <span>{{ th.key }}</span>
+          <span style="margin-left:auto">{{ th.ping }}</span>
+          <span>UTF-8</span>
+          <span>xterm-256color</span>
+        </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSftp }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="SFTP" style="flex:1;min-height:0;display:flex;flex-direction:column;padding:24px 28px;gap:16px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="font-size:22px;font-weight:600;letter-spacing:-0.4px">SFTP</div>
+          <span style="font-family:'Geist Mono',monospace;font-size:12px;color:var(--dm,#7d7b77)">local ⇄ {{ sftpHost }}</span>
+        </div>
+        <div style="flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px">
+          <sc-for list="{{ panes }}" as="p" hint-placeholder-count="2">
+            <div style="display:flex;flex-direction:column;min-height:0;border:1px solid var(--bd,#1d1e21);border-radius:12px;background:var(--side,#111213);overflow:hidden">
+              <div style="height:42px;display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:1px solid var(--bd,#1d1e21)">
+                <span style="height:20px;padding:0 7px;display:flex;align-items:center;border-radius:5px;background:var(--sel,#1c1d20);color:var(--mu,#a9a7a2);font-size:11px">{{ p.label }}</span>
+                <span style="font-family:'Geist Mono',monospace;font-size:12px;color:var(--tx,#E4E2DE)">{{ p.path }}</span>
+              </div>
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 80px 110px;padding:8px 14px;font-size:11px;color:var(--dd,#5f5d59);border-bottom:1px solid var(--bd2,#1a1b1e)"><span>Name</span><span style="text-align:right">Size</span><span style="text-align:right">Modified</span></div>
+              <div style="flex:1;overflow:auto;padding:4px 6px">
+                <sc-for list="{{ p.files }}" as="f" hint-placeholder-count="6">
+                  <div onClick="{{ f.select }}" style="display:grid;grid-template-columns:minmax(0,1fr) 80px 110px;align-items:center;height:32px;padding:0 8px;border-radius:6px;cursor:default;background:{{ f.bg }}" style-hover="background:var(--hov,#18191b)">
+                    <span style="display:flex;align-items:center;gap:10px;min-width:0">
+                      <span style="width:10px;height:10px;flex-shrink:0;border-radius:{{ f.iconR }};background:{{ f.iconC }}"></span>
+                      <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ f.name }}</span>
+                    </span>
+                    <span style="text-align:right;font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--dm,#7d7b77)">{{ f.size }}</span>
+                    <span style="text-align:right;font-size:12px;color:var(--dm,#7d7b77)">{{ f.mod }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:2px;border:1px solid var(--bd,#1d1e21);border-radius:12px;background:var(--side,#111213);padding:8px">
+          <sc-for list="{{ transfers }}" as="x" hint-placeholder-count="2">
+            <div style="display:grid;grid-template-columns:24px minmax(0,1fr) 200px 120px;align-items:center;gap:12px;padding:8px 8px">
+              <span style="font-family:'Geist Mono',monospace;color:{{ x.c }}">{{ x.dir }}</span>
+              <span style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-family:'Geist Mono',monospace;font-size:12px">{{ x.name }}</span><span style="font-size:11.5px;color:var(--dm,#7d7b77)">{{ x.dest }}</span></span>
+              <span style="height:4px;border-radius:4px;background:var(--l1,#1f2023);overflow:hidden"><span style="display:block;height:100%;border-radius:4px;width:{{ x.pct }};background:{{ x.c }}"></span></span>
+              <span style="text-align:right;font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--dm,#7d7b77)">{{ x.meta }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isKeys }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Keychain" style="flex:1;min-height:0;overflow:auto;padding:28px 32px;display:flex;flex-direction:column;gap:22px">
+        <div style="display:flex;align-items:flex-end;gap:12px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:22px;font-weight:600;letter-spacing:-0.4px">Keychain</div>
+            <div style="color:var(--dm,#7d7b77)">Private keys never leave this device. The vault stores them encrypted.</div>
+          </div>
+          <button style="margin-left:auto;height:34px;padding:0 14px;border:1px solid var(--l3,#26272a);border-radius:8px;background:transparent;color:var(--tx,#E4E2DE);font:inherit;font-weight:500;cursor:pointer" style-hover="background:var(--sel,#1c1d20)">Import</button>
+          <button style="height:34px;padding:0 14px;border:none;border-radius:8px;background:var(--tx,#E4E2DE);color:var(--bg,#0E0F10);font:inherit;font-weight:500;cursor:pointer" style-hover="background:var(--hi,#fff)">Generate key</button>
+        </div>
+        <div style="border:1px solid var(--bd,#1d1e21);border-radius:12px;background:var(--side,#111213);overflow:hidden">
+          <div style="display:grid;grid-template-columns:minmax(0,1.2fr) 120px minmax(0,1.6fr) 90px 110px;gap:16px;padding:10px 18px;font-size:11px;color:var(--dd,#5f5d59);border-bottom:1px solid var(--bd,#1d1e21)"><span>Name</span><span>Type</span><span>Fingerprint</span><span style="text-align:right">Hosts</span><span style="text-align:right">Created</span></div>
+          <sc-for list="{{ keys }}" as="k" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:minmax(0,1.2fr) 120px minmax(0,1.6fr) 90px 110px;gap:16px;align-items:center;padding:14px 18px;border-bottom:1px solid var(--bd2,#1a1b1e)" style-hover="background:var(--surf,#141517)">
+              <span style="display:flex;flex-direction:column;gap:3px"><span style="font-weight:500">{{ k.name }}</span><span style="font-size:11.5px;color:var(--dm,#7d7b77)">{{ k.note }}</span></span>
+              <span><span style="height:20px;padding:0 7px;display:inline-flex;align-items:center;border-radius:5px;font-family:'Geist Mono',monospace;font-size:10.5px;background:{{ k.bg }};color:{{ k.c }}">{{ k.type }}</span></span>
+              <span style="font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--mu,#a9a7a2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ k.fp }}</span>
+              <span style="text-align:right;font-family:'Geist Mono',monospace;font-size:12px">{{ k.hosts }}</span>
+              <span style="text-align:right;color:var(--dm,#7d7b77);font-size:12px">{{ k.created }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isPorts }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Port forwarding" style="flex:1;min-height:0;overflow:auto;padding:28px 32px;display:flex;flex-direction:column;gap:22px">
+        <div style="display:flex;align-items:flex-end;gap:12px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:22px;font-weight:600;letter-spacing:-0.4px">Port forwarding</div>
+            <div style="color:var(--dm,#7d7b77)">{{ portSummary }}</div>
+          </div>
+          <button style="margin-left:auto;height:34px;padding:0 14px;border:none;border-radius:8px;background:var(--tx,#E4E2DE);color:var(--bg,#0E0F10);font:inherit;font-weight:500;cursor:pointer" style-hover="background:var(--hi,#fff)">New rule</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ ports }}" as="r" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:34px minmax(0,1fr) minmax(0,1fr) 44px;align-items:center;gap:18px;padding:16px 18px;border:1px solid var(--bd,#1d1e21);border-radius:12px;background:var(--side,#111213)">
+              <span style="width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Geist Mono',monospace;font-size:12px;font-weight:600;background:var(--sel,#1c1d20);color:var(--mu,#a9a7a2)">{{ r.kind }}</span>
+              <span style="display:flex;flex-direction:column;gap:4px"><span style="font-weight:500">{{ r.name }}</span><span style="font-size:12px;color:var(--dm,#7d7b77)">{{ r.kindLong }} · via {{ r.via }}</span></span>
+              <span style="font-family:'Geist Mono',monospace;font-size:12.5px;color:var(--mu,#a9a7a2)">{{ r.map }}</span>
+              <span onClick="{{ r.toggle }}" style="width:36px;height:20px;border-radius:20px;padding:2px;cursor:pointer;display:flex;background:{{ r.track }};justify-content:{{ r.justify }}"><span style="width:16px;height:16px;border-radius:50%;background:{{ r.knob }}"></span></span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSnippets }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Snippets" style="flex:1;min-height:0;overflow:auto;padding:28px 32px;display:flex;flex-direction:column;gap:22px">
+        <div style="display:flex;align-items:flex-end;gap:12px">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:22px;font-weight:600;letter-spacing:-0.4px">Snippets</div>
+            <div style="color:var(--dm,#7d7b77)">Run on the active session, or from ⌘K anywhere.</div>
+          </div>
+          <button style="margin-left:auto;height:34px;padding:0 14px;border:none;border-radius:8px;background:var(--tx,#E4E2DE);color:var(--bg,#0E0F10);font:inherit;font-weight:500;cursor:pointer" style-hover="background:var(--hi,#fff)">New snippet</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px">
+          <sc-for list="{{ snippets }}" as="sn" hint-placeholder-count="6">
+            <div style="display:flex;flex-direction:column;gap:12px;padding:16px;border:1px solid var(--bd,#1d1e21);border-radius:12px;background:var(--side,#111213)">
+              <div style="display:flex;align-items:center;gap:8px"><span style="font-weight:500">{{ sn.name }}</span><span onClick="{{ sn.run }}" style="margin-left:auto;font-size:12px;color:var(--g,oklch(0.80 0.13 160));cursor:pointer" style-hover="color:var(--tx,#E4E2DE)">Run</span></div>
+              <div style="padding:10px 12px;border-radius:8px;background:var(--term,#0B0C0D);font-family:'Geist Mono',monospace;font-size:12px;color:var(--mu,#a9a7a2);white-space:pre-wrap;word-break:break-all">{{ sn.cmd }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Settings" style="flex:1;min-height:0;overflow:auto;padding:28px 32px 56px">
+        <div style="max-width:760px;display:flex;flex-direction:column;gap:28px">
+          <div style="font-size:22px;font-weight:600;letter-spacing:-0.4px">Settings</div>
+          <sc-for list="{{ settings }}" as="sec" hint-placeholder-count="4">
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font-size:11px;color:var(--dd,#5f5d59);font-weight:500;letter-spacing:0.4px;text-transform:uppercase">{{ sec.title }}</div>
+              <div style="border:1px solid var(--bd,#1d1e21);border-radius:12px;background:var(--surf,#141517);overflow:hidden">
+                <sc-for list="{{ sec.rows }}" as="r" hint-placeholder-count="3">
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:24px;padding:14px 18px;border-bottom:1px solid var(--bd2,#1a1b1e)">
+                    <div style="display:flex;flex-direction:column;gap:3px"><span style="font-weight:500">{{ r.label }}</span><span style="font-size:12px;color:var(--dm,#7d7b77);text-wrap:pretty">{{ r.desc }}</span></div>
+                    <div style="display:flex;align-items:center">
+                      <sc-if value="{{ r.isSeg }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;gap:2px;padding:2px;border-radius:8px;background:var(--bg,#0E0F10);border:1px solid var(--bd,#1d1e21)">
+                          <sc-for list="{{ r.opts }}" as="o" hint-placeholder-count="3">
+                            <span onClick="{{ o.pick }}" style="height:26px;padding:0 11px;display:flex;align-items:center;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500;background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</span>
+                          </sc-for>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ r.isToggle }}" hint-placeholder-val="{{ false }}">
+                        <span onClick="{{ r.toggle }}" style="width:36px;height:20px;border-radius:20px;padding:2px;cursor:pointer;display:flex;background:{{ r.track }};justify-content:{{ r.justify }}"><span style="width:16px;height:16px;border-radius:50%;background:{{ r.knob }}"></span></span>
+                      </sc-if>
+                      <sc-if value="{{ r.isStep }}" hint-placeholder-val="{{ false }}">
+                        <div style="display:flex;align-items:center;gap:2px;border:1px solid var(--bd,#1d1e21);border-radius:8px;background:var(--bg,#0E0F10);padding:2px">
+                          <span onClick="{{ r.dec }}" style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;color:var(--mu,#a9a7a2)" style-hover="background:var(--sel,#1c1d20)">−</span>
+                          <span style="min-width:44px;text-align:center;font-family:'Geist Mono',monospace;font-size:12px">{{ r.text }}</span>
+                          <span onClick="{{ r.inc }}" style="width:26px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px;cursor:pointer;color:var(--mu,#a9a7a2)" style-hover="background:var(--sel,#1c1d20)">+</span>
+                        </div>
+                      </sc-if>
+                      <sc-if value="{{ r.isText }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-family:'Geist Mono',monospace;font-size:12px;color:var(--mu,#a9a7a2)">{{ r.text }}</span>
+                      </sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </main>
+
+  <sc-if value="{{ paletteOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closePalette }}" style="position:absolute;inset:0;background:rgba(5,5,6,0.55);backdrop-filter:blur(3px);display:flex;justify-content:center;align-items:flex-start;padding-top:14vh;z-index:10">
+      <div onClick="{{ stop }}" style="width:580px;background:var(--surf,#141517);border:1px solid var(--l3,#26272a);border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,0.5);overflow:hidden">
+        <input ref="{{ palRef }}" value="{{ pq }}" onChange="{{ onPq }}" onKeyDown="{{ onPalKey }}" placeholder="Connect to a host, run a command…" style="width:100%;height:52px;padding:0 18px;background:transparent;border:none;border-bottom:1px solid var(--l2,#222326);outline:none;color:var(--tx,#E4E2DE);font:inherit;font-size:15px">
+        <div style="max-height:380px;overflow:auto;padding:6px">
+          <sc-for list="{{ palItems }}" as="it" hint-placeholder-count="6">
+            <div onClick="{{ it.run }}" onMouseEnter="{{ it.hover }}" style="display:flex;align-items:center;gap:12px;height:38px;padding:0 12px;border-radius:8px;cursor:pointer;background:{{ it.bg }}">
+              <span style="width:6px;height:6px;border-radius:{{ it.r }};background:{{ it.c }}"></span>
+              <span style="flex:1">{{ it.label }}</span>
+              <span style="font-family:'Geist Mono',monospace;font-size:11.5px;color:var(--dd,#5f5d59)">{{ it.hint }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:16px;padding:10px 18px;border-top:1px solid var(--l1,#1f2023);font-size:11.5px;color:var(--dd,#5f5d59)"><span>↑↓ navigate</span><span>↵ open</span><span>esc close</span></div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;layout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;sidebar&quot;,&quot;rail&quot;,&quot;minimal&quot;,&quot;focus&quot;],&quot;default&quot;:&quot;sidebar&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;,&quot;system&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;startView&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;terminal&quot;,&quot;hosts&quot;,&quot;sftp&quot;,&quot;keys&quot;,&quot;ports&quot;,&quot;snippets&quot;,&quot;settings&quot;],&quot;default&quot;:&quot;terminal&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;termFontSize&quot;:{&quot;editor&quot;:&quot;range&quot;,&quot;min&quot;:11,&quot;max&quot;:18,&quot;step&quot;:1,&quot;unit&quot;:&quot;px&quot;,&quot;default&quot;:13,&quot;tsType&quot;:&quot;number&quot;},&quot;splitDefault&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;},&quot;embedded&quot;:{&quot;editor&quot;:null,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+const T='var(--tx,#E4E2DE)',D='var(--tdim,#6b6965)',M='var(--mu,#a9a7a2)',G='var(--g,oklch(0.80 0.13 160))',B='var(--b,oklch(0.80 0.11 245))',A='var(--a,oklch(0.82 0.12 80))',R='var(--r,oklch(0.72 0.14 25))',P='var(--p,oklch(0.78 0.11 310))';
+const sg=(t,c)=>({t,c:c||T});
+const ln=(...s)=>({segs:s.map(x=>typeof x==='string'?sg(x):Array.isArray(x)?sg(x[0],x[1]):x)});
+const OSC={UB:A,DB:R,AL:B,PI:P,TN:G};
+const GROUPS=[{name:'Production',color:R},{name:'Staging',color:A},{name:'Homelab',color:B}];
+const HOSTS=[
+{id:'h1',name:'api-prod-01',addr:'10.0.1.12',user:'deploy',port:22,os:'Ubuntu 24.04',osk:'UB',group:'Production',status:'online',ping:'23 ms',key:'deploy-ed25519',tags:['api','docker'],jump:'—'},
+{id:'h2',name:'api-prod-02',addr:'10.0.1.13',user:'deploy',port:22,os:'Ubuntu 24.04',osk:'UB',group:'Production',status:'online',ping:'25 ms',key:'deploy-ed25519',tags:['api','docker'],jump:'—'},
+{id:'h3',name:'db-primary',addr:'10.0.2.4',user:'postgres',port:22,os:'Debian 12',osk:'DB',group:'Production',status:'online',ping:'31 ms',key:'deploy-ed25519',tags:['postgres'],jump:'bastion'},
+{id:'h4',name:'bastion',addr:'bastion.tern.dev',user:'ops',port:2222,os:'Alpine 3.20',osk:'AL',group:'Production',status:'online',ping:'18 ms',key:'yubikey-5c',tags:['jump'],jump:'—'},
+{id:'h5',name:'staging-web',addr:'10.8.0.21',user:'deploy',port:22,os:'Ubuntu 22.04',osk:'UB',group:'Staging',status:'idle',ping:'41 ms',key:'deploy-ed25519',tags:['web'],jump:'bastion'},
+{id:'h6',name:'staging-worker',addr:'10.8.0.22',user:'deploy',port:22,os:'Ubuntu 22.04',osk:'UB',group:'Staging',status:'offline',ping:'—',key:'deploy-ed25519',tags:['queue'],jump:'bastion'},
+{id:'h7',name:'pi-hole',addr:'192.168.1.4',user:'pi',port:22,os:'Raspberry Pi OS',osk:'PI',group:'Homelab',status:'online',ping:'2 ms',key:'homelab',tags:['dns'],jump:'—'},
+{id:'h8',name:'truenas',addr:'192.168.1.10',user:'root',port:22,os:'TrueNAS 24.04',osk:'TN',group:'Homelab',status:'online',ping:'1 ms',key:'homelab',tags:['storage'],jump:'—'},
+{id:'h9',name:'k3s-node-1',addr:'192.168.1.21',user:'ubuntu',port:22,os:'Ubuntu 24.04',osk:'UB',group:'Homelab',status:'idle',ping:'3 ms',key:'homelab',tags:['k8s'],jump:'—'}];
+const SNIPS=[
+{name:'Tail nginx errors',cmd:'sudo tail -n 3 /var/log/nginx/error.log'},
+{name:'Disk usage',cmd:'df -h --output=source,pcent,target'},
+{name:'Recreate api container',cmd:'docker compose up -d --force-recreate api'},
+{name:'Who is logged in',cmd:'w -h'},
+{name:'Top memory',cmd:'ps aux --sort=-%mem | head -4'},
+{name:'Renew certificates',cmd:'sudo certbot renew --quiet'}];
+const stDot=s=>s==='online'?G:s==='idle'?A:'var(--off,#4a4946)';
+const prompt=h=>[sg(`${h.user}@${h.name}`,G),sg(':'),sg('~',B),sg('$ ')];
+const welcome=h=>[
+ln([`Welcome to ${h.os} (GNU/Linux 6.8.0-45-generic x86_64)`,M]),ln(''),
+ln(['  System load:  ',D],'0.18',['            Processes:        ',D],'142'),
+ln(['  Usage of /:   ',D],'41.2% of 78GB',['   Users logged in:  ',D],'1'),
+ln(['  Memory usage: ',D],'37%',['             IPv4 address:     ',D],h.addr),ln(''),
+ln([`Last login: Fri Sep 25 18:42:07 2026 from 10.0.0.4`,D])];
+const out=(cmd,h)=>{
+  const c=cmd.trim();
+  const m={
+  'ls':[ln(['app',B],'  ',['deploy.sh',G],'  docker-compose.yml  ',['logs',B])],
+  'whoami':[ln(h.user)],
+  'uptime':[ln(' 18:51:04 up 5 days,  4:11,  1 user,  load average: 0.18, 0.22, 0.19')],
+  'help':[ln(['demo commands: ls  uptime  whoami  htop  clear  (snippets work too)',D])],
+  'docker ps':[ln(['NAMES     STATUS',D]),ln('api       ',['Up 3 days (healthy)',G]),ln('worker    ',['Up 3 days',G]),ln('redis     ',['Up 12 days',G])],
+  'sudo tail -n 3 /var/log/nginx/error.log':[ln(['2026/09/27 18:12:44 ',D],['[warn]',A],' upstream response buffered to a temporary file'),ln(['2026/09/27 18:31:02 ',D],['[error]',R],' connect() failed (111) while connecting to upstream'),ln(['2026/09/27 18:31:03 ',D],['[warn]',A],' upstream server temporarily disabled')],
+  'df -h --output=source,pcent,target':[ln(['Filesystem     Use% Mounted on',D]),ln('/dev/nvme0n1p1  41% /'),ln('/dev/nvme1n1   ',['78%',A],' /var/lib/docker'),ln('tmpfs            1% /run')],
+  'docker compose up -d --force-recreate api':[ln([' ✔ Container api-redis-1  ',D],['Running',G]),ln([' ✔ Container api-api-1    ',D],['Started',G])],
+  'w -h':[ln(`${h.user}   pts/0    10.0.0.4   18:42    0.00s  0.04s  0.00s w -h`)],
+  'ps aux --sort=-%mem | head -4':[ln(['USER       PID %CPU %MEM COMMAND',D]),ln('deploy    1842  8.1  6.4 node dist/server.js'),ln('999       1210  1.2  3.9 redis-server *:6379'),ln('deploy    1901  0.4  2.1 node dist/worker.js')],
+  'sudo certbot renew --quiet':[]};
+  if(m[c])return m[c];
+  if(c==='htop')return[ln(['Opened in split pane →',D])];
+  if(!c)return[];
+  return[ln([`${c.split(' ')[0]}: output not simulated in this preview`,D])];
+};
+const TOP=[
+ln(['  CPU ',D],['[',D],['||||||||',G],['||',A],['              ',D],['23.4%',T],[']',D],['   Tasks: ',D],'142, 311 thr'),
+ln(['  Mem ',D],['[',D],['|||||||||||',G],['            ',D],['2.9G/7.7G',T],[']',D],['   Load: ',D],'0.18 0.22 0.19'),
+ln(['  Swp ',D],['[',D],['                     ',D],['0K/2.0G',T],[']',D],['   Uptime: ',D],'5 days, 04:11:32'),ln(''),
+ln(['    PID USER      CPU%  MEM%  TIME+    COMMAND',D]),
+ln('   1842 deploy     8.1   6.4  3h12:04  ',['node dist/server.js',G]),
+ln('   1210 999        1.2   3.9  41:22.9  redis-server *:6379'),
+ln('   1901 deploy     0.4   2.1  22:08.1  ',['node dist/worker.js',G]),
+ln('    884 root       0.3   0.8  12:44.0  /usr/sbin/nginx'),
+ln('    612 root       0.1   0.5   4:01.7  /usr/bin/containerd'),
+ln('      1 root       0.0   0.2   0:14.2  /sbin/init')];
+const LOCAL=[['src','dir','—','Today'],['public','dir','—','Sep 24'],['node_modules','dir','—','Sep 22'],['package.json','file','1.2 KB','Today'],['README.md','file','4.8 KB','Sep 20'],['deploy.sh','exec','612 B','Sep 18'],['.env.production','file','311 B','Sep 11'],['dist.tar.gz','file','28.4 MB','Today']];
+const REMOTE=[['releases','dir','—','Sep 25'],['shared','dir','—','Aug 30'],['current','link','→ releases/0925','Sep 25'],['index.html','file','18 KB','Sep 25'],['robots.txt','file','68 B','Jun 02'],['.htaccess','file','402 B','Jun 02']];
+const KEYS=[
+{name:'deploy-ed25519',note:'Work servers',type:'ED25519',fp:'SHA256:q3Fh8LmZp0vT2c7Yw1kRbN4xUa6sEe9aKx',hosts:5,created:'Mar 2026',c:G},
+{name:'yubikey-5c',note:'Hardware key · touch required',type:'ECDSA-SK',fp:'SHA256:Vd7Qk2mPz8nL0tR5wXc3bY1hJ6gF4sA9eUo',hosts:1,created:'Jan 2026',c:B},
+{name:'homelab',note:'Home network',type:'ED25519',fp:'SHA256:Lp4Tn9Xe2Wq7Kc1Zr6Mb3Vy8Hd5Gf0Js2Aa',hosts:3,created:'Nov 2025',c:G},
+{name:'legacy-rsa',note:'Not assigned',type:'RSA 4096',fp:'SHA256:Zx1Cv2Bn3Mm4Aa5Ss6Dd7Ff8Gg9Hh0Jj1Kk',hosts:0,created:'Feb 2023',c:A}];
+const PORTS=[
+{id:'p1',kind:'L',kindLong:'Local',name:'Postgres',via:'bastion',map:'localhost:5432 → db-primary:5432'},
+{id:'p2',kind:'L',kindLong:'Local',name:'Redis',via:'api-prod-01',map:'localhost:6379 → localhost:6379'},
+{id:'p3',kind:'R',kindLong:'Remote',name:'Share dev server',via:'staging-web',map:'staging-web:8080 → localhost:3000'},
+{id:'p4',kind:'D',kindLong:'Dynamic',name:'SOCKS proxy',via:'bastion',map:'localhost:1080 (SOCKS5)'}];
+const hostById=id=>HOSTS.find(h=>h.id===id);
+const badge=h=>({badgeBg:`color-mix(in oklch, ${OSC[h.osk]} 16%, transparent)`,badgeFg:OSC[h.osk]});
+let sid=10;
+
+class Component extends DCLogic {
+  termRef=React.createRef(); inputRef=React.createRef(); palRef=React.createRef();
+  constructor(p){super(p);
+    const sv=p.startView??'terminal';
+    const h1=HOSTS[0],h7=HOSTS[6];
+    const s1={id:1,hostId:'h1',split:p.splitDefault??false,lines:[...welcome(h1),ln(...prompt(h1),'docker ps'),...out('docker ps',h1),ln(...prompt(h1),'sudo tail -n 3 /var/log/nginx/error.log'),...out('sudo tail -n 3 /var/log/nginx/error.log',h1)]};
+    const s2={id:2,hostId:'h7',split:false,lines:[...welcome(h7)]};
+    this.state={theme:p.theme??'dark',layout:p.layout??'sidebar',font:p.termFontSize??13,cursor:'Bar',autosync:true,touch:true,lock:'15 min',view:sv==='terminal'?'term':sv,sessions:[s1,s2],active:1,sel:sv==='hosts'?'h3':null,query:'',group:null,pal:false,pq:'',pi:0,snip:true,input:'',ports:{p1:true,p2:false,p3:true,p4:false},ls:3,rs:0,hist:[],hi:-1};
+  }
+  componentDidMount(){
+    this.kd=e=>{
+      if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='b'){e.preventDefault();this.setState(st=>({sideHidden:!st.sideHidden}));}
+      else if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();this.setState(s=>({pal:!s.pal,pq:'',pi:0}));}
+      else if(e.key==='Escape'&&this.state.pal)this.setState({pal:false});
+    };
+    window.addEventListener('keydown',this.kd);this.scroll();
+  }
+  settings(){
+    const s=this.state,set=k=>v=>this.setState({[k]:v});
+    const seg=(opts,cur,fn)=>({isSeg:true,opts:opts.map(o=>({label:o,bg:o.toLowerCase()===String(cur).toLowerCase()?'var(--sel,#1c1d20)':'transparent',fg:o.toLowerCase()===String(cur).toLowerCase()?'var(--tx,#E4E2DE)':'var(--dm,#7d7b77)',pick:()=>fn(o)}))});
+    const tog=k=>({isToggle:true,track:s[k]?G:'var(--l3,#26272a)',knob:s[k]?'var(--term,#0B0C0D)':'var(--dm,#7d7b77)',justify:s[k]?'flex-end':'flex-start',toggle:()=>this.setState(st=>({[k]:!st[k]}))});
+    const txt=t=>({isText:true,text:t});
+    return[
+      {title:'Appearance',rows:[
+        {label:'Theme',desc:'System follows your OS setting.',...seg(['Dark','Light','System'],s.theme,o=>this.setState({theme:o.toLowerCase()}))},
+        {label:'Layout',desc:'Sidebar, icon rail with a host list, a single top bar, or terminal only.',...seg(['Sidebar','Rail','Minimal','Focus'],s.layout,o=>this.setState({layout:o.toLowerCase()}))}]},
+      {title:'Terminal',rows:[
+        {label:'Font size',desc:'Geist Mono, ligatures off.',isStep:true,text:`${s.font}px`,dec:()=>this.setState(st=>({font:Math.max(10,st.font-1)})),inc:()=>this.setState(st=>({font:Math.min(20,st.font+1)}))},
+        {label:'Cursor',desc:'Shape of the caret in sessions.',...seg(['Block','Bar','Underline'],s.cursor,set('cursor'))},
+        {label:'Scrollback',desc:'Lines kept per session.',...txt('10,000')}]},
+      {title:'Vault & sync',rows:[
+        {label:'Sync with git',desc:'Hosts, snippets and tunnels are committed as encrypted files to your own remote.',...tog('autosync')},
+        {label:'Remote',desc:'Any git host works. No Tern account needed.',...txt('git@github.com:you/vault')}]},
+      {title:'Security',rows:[
+        {label:'Lock vault when idle',desc:'Requires your passphrase to unlock.',...seg(['5 min','15 min','Never'],s.lock,set('lock'))},
+        {label:'Biometric unlock',desc:'Use Touch ID or Windows Hello instead of the passphrase.',...tog('touch')}]},
+      {title:'About',rows:[
+        {label:'Tern 0.4.2',desc:'Free and open source under the MIT license.',...txt('github.com/tern-sh/tern')}]}
+    ];
+  }
+  componentWillUnmount(){window.removeEventListener('keydown',this.kd);}
+  componentDidUpdate(pp){
+    const ps=this._prev||{};pp=this._pp||this.props;this._pp=this.props;const st=this.state;this._prev={pal:st.pal,sessions:st.sessions,active:st.active,view:st.view};
+    const p=this.props,up={};
+    if(pp.theme!==p.theme&&p.theme)up.theme=p.theme;
+    if(pp.layout!==p.layout&&p.layout)up.layout=p.layout;
+    if(pp.termFontSize!==p.termFontSize&&p.termFontSize)up.font=p.termFontSize;
+    if(Object.keys(up).length)this.setState(up);
+    if(this.state.pal&&!ps.pal)setTimeout(()=>this.palRef.current?.focus(),0);
+    if(ps.sessions!==this.state.sessions||ps.active!==this.state.active||ps.view!==this.state.view)this.scroll();
+  }
+  scroll(){setTimeout(()=>{const el=this.termRef.current;if(el)el.scrollTop=el.scrollHeight;},0);}
+  go=v=>this.setState({view:v,pal:false});
+  connect=hid=>{
+    const ex=this.state.sessions.find(s=>s.hostId===hid);
+    if(ex)return this.setState({active:ex.id,view:'term',pal:false});
+    const h=hostById(hid);const id=++sid;
+    this.setState(s=>({sessions:[...s.sessions,{id,hostId:hid,split:false,lines:welcome(h)}],active:id,view:'term',pal:false}));
+    setTimeout(()=>this.inputRef.current?.focus(),50);
+  };
+  closeTab=id=>this.setState(s=>{
+    const sessions=s.sessions.filter(x=>x.id!==id);
+    let active=s.active,view=s.view;
+    if(active===id){active=sessions.length?sessions[sessions.length-1].id:null;if(!active&&view==='term')view='hosts';}
+    return{sessions,active,view};
+  });
+  run=cmd=>{
+    let {sessions,active}=this.state;
+    if(!active){this.connect('h1');setTimeout(()=>this.run(cmd),60);return;}
+    this.setState(s=>({view:'term',input:'',hist:cmd.trim()?[...s.hist,cmd]:s.hist,hi:-1,sessions:s.sessions.map(x=>{
+      if(x.id!==s.active)return x;const h=hostById(x.hostId);
+      if(cmd.trim()==='clear')return{...x,lines:[]};
+      return{...x,split:cmd.trim()==='htop'?true:x.split,lines:[...x.lines,ln(...prompt(h).map(p=>[p.t,p.c]),cmd),...out(cmd,h)]};
+    })}));
+  };
+  updSession=(fn)=>this.setState(s=>({sessions:s.sessions.map(x=>x.id===s.active?fn(x):x)}));
+
+  renderVals(){
+    const s=this.state,v=s.view;
+    const q=s.query.toLowerCase();
+    const match=h=>(!s.group||h.group===s.group)&&(!q||[h.name,h.addr,h.user,...h.tags].some(t=>t.toLowerCase().includes(q)));
+    const deco=h=>({...h,...badge(h),dot:stDot(h.status),statusText:h.status==='offline'?'offline':h.ping,
+      cardBg:s.sel===h.id?'var(--hov,#18191b)':'var(--surf,#141517)',border:s.sel===h.id?'var(--l5,#3a3b3f)':'var(--bd,#1d1e21)',
+      rowBg:v==='term'&&s.sessions.some(x=>x.id===s.active&&x.hostId===h.id)?'var(--sel,#1c1d20)':'transparent',
+      select:()=>this.setState({sel:h.id}),connect:()=>this.connect(h.id),sftp:()=>this.setState({view:'sftp',sftpHost:h.id})});
+    const sections=GROUPS.map(g=>{const hs=HOSTS.filter(h=>h.group===g.name&&match(h)).map(deco);return{...g,count:hs.length,hosts:hs};}).filter(g=>g.hosts.length);
+    const selH=s.sel?hostById(s.sel):null;
+    const sel=selH?{...deco(selH),statusLong:selH.status==='offline'?'Unreachable · last seen 3 days ago':`${selH.status==='idle'?'Idle':'Online'} · ${selH.ping}`,
+      fields:[{k:'Address',v:selH.addr},{k:'Port',v:String(selH.port)},{k:'User',v:selH.user},{k:'Key',v:selH.key},{k:'Jump host',v:selH.jump},{k:'OS',v:selH.os}],
+      history:[{when:'Today, 18:42',dur:'1h 09m'},{when:'Yesterday, 10:15',dur:'22m'},{when:'Sep 23, 16:02',dur:'3h 41m'}]}:{};
+    const act=s.sessions.find(x=>x.id===s.active);
+    const actH=act?hostById(act.hostId):HOSTS[0];
+    const th={...actH,...badge(actH),sftp:()=>this.setState({view:'sftp',sftpHost:actH.id})};
+    const onCount=Object.values(s.ports).filter(Boolean).length;
+    const nav=[['hosts','Hosts',HOSTS.length,'H'],['sftp','SFTP','','F'],['keys','Keychain',KEYS.length,'K'],['ports',s.layout==='minimal'?'Ports':'Port forwarding',onCount?`${onCount} on`:'','P'],['snippets','Snippets',SNIPS.length,'S'],['settings','Settings','','\u2699\uFE0E']].map(([k,label,count,abbr])=>({label,abbr,mt:k==='settings'?'auto':'0',count:String(count),go:()=>this.setState({view:k,group:null}),bg:v===k&&!(k==='hosts'&&s.group)?'var(--sel,#1c1d20)':'transparent',fg:v===k?'var(--tx,#E4E2DE)':'var(--mu,#a9a7a2)'}));
+    const groupNav=GROUPS.map(g=>({...g,count:String(HOSTS.filter(h=>h.group===g.name).length),bg:v==='hosts'&&s.group===g.name?'var(--sel,#1c1d20)':'transparent',fg:v==='hosts'&&s.group===g.name?'var(--tx,#E4E2DE)':'var(--mu,#a9a7a2)',go:()=>this.setState(st=>({view:'hosts',group:st.group===g.name&&st.view==='hosts'?null:g.name}))}));
+    const tabs=s.sessions.map(x=>{const h=hostById(x.hostId);const on=v==='term'&&x.id===s.active;return{label:h.name,dot:stDot(h.status),bg:on?'var(--sel,#1c1d20)':'transparent',fg:on?'var(--tx,#E4E2DE)':'var(--dm,#7d7b77)',go:()=>this.setState({active:x.id,view:'term'}),close:e=>{e.stopPropagation();this.closeTab(x.id);}};});
+    const snippets=SNIPS.map(sn=>({...sn,run:()=>this.run(sn.cmd)}));
+    const sftpH=hostById(s.sftpHost||(act?act.hostId:'h1'));
+    const file=(arr,side)=>arr.map(([name,kind,size,mod],i)=>({name,size,mod,iconR:kind==='dir'||kind==='link'?'3px':'50%',iconC:kind==='dir'?B:kind==='link'?P:kind==='exec'?G:'var(--off,#4a4946)',bg:s[side]===i?'var(--sel,#1c1d20)':'transparent',select:()=>this.setState({[side]:i})}));
+    const panes=[{label:'Local',path:'~/code/tern-site',files:file(LOCAL,'ls')},{label:sftpH.name,path:'/var/www/tern-site',files:file(REMOTE,'rs')}];
+    const transfers=[{dir:'↑',c:G,name:'dist.tar.gz',dest:`→ ${sftpH.name}:/var/www/tern-site/releases`,pct:'64%',meta:'18.2 / 28.4 MB'},{dir:'↓',c:B,name:'nginx.conf',dest:`← ${sftpH.name}:/etc/nginx`,pct:'100%',meta:'done · 3.1 KB'}];
+    const ports=PORTS.map(r=>{const on=s.ports[r.id];return{...r,track:on?G:'var(--l3,#26272a)',knob:on?'var(--term,#0B0C0D)':'var(--dm,#7d7b77)',justify:on?'flex-end':'flex-start',toggle:()=>this.setState(st=>({ports:{...st.ports,[r.id]:!st.ports[r.id]}}))};});
+    const keys=KEYS.map(k=>({...k,hosts:String(k.hosts),bg:`color-mix(in oklch, ${k.c} 14%, transparent)`}));
+    // palette
+    const pq=s.pq.toLowerCase();
+    let items=[
+      ...HOSTS.map(h=>({label:`Connect to ${h.name}`,hint:`${h.user}@${h.addr}`,c:stDot(h.status),r:'50%',fn:()=>this.connect(h.id)})),
+      ...SNIPS.map(sn=>({label:`Run: ${sn.name}`,hint:'snippet',c:P,r:'2px',fn:()=>{this.setState({pal:false});this.run(sn.cmd);}})),
+      ...[['hosts','Hosts'],['sftp','SFTP'],['keys','Keychain'],['ports','Port forwarding'],['snippets','Snippets'],['settings','Settings']].map(([k,l])=>({label:`Go to ${l}`,hint:'view',c:'var(--dm,#7d7b77)',r:'2px',fn:()=>this.go(k)}))];
+    if(pq)items=items.filter(it=>(it.label+' '+it.hint).toLowerCase().includes(pq));
+    items=items.slice(0,9);
+    const pi=Math.min(s.pi,Math.max(0,items.length-1));
+    const palItems=items.map((it,i)=>({...it,bg:i===pi?'var(--l1,#1f2023)':'transparent',run:it.fn,hover:()=>this.setState({pi:i})}));
+    return{
+      nav,groupNav,tabs,sections,sel,hasSel:!!selH,th,snippets,panes,transfers,ports,keys,palItems,
+      isHosts:v==='hosts',isTerm:v==='term'&&!!act,isSftp:v==='sftp',isKeys:v==='keys',isPorts:v==='ports',rootH:this.props.embedded?'100%':'100vh',isSnippets:v==='snippets',isSettings:v==='settings',
+      theme:s.theme==='system'?(window.matchMedia&&matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):s.theme,
+      isSidebar:s.layout==='sidebar',isRail:s.layout==='rail',isMinimal:s.layout==='minimal',settings:this.settings(),
+      hostSummary:`${HOSTS.length} hosts · ${HOSTS.filter(h=>h.status==='online').length} online${s.group?` · showing ${s.group}`:''}`,
+      noResults:!sections.length,query:s.query,onQuery:e=>this.setState({query:e.target.value}),
+      newHost:()=>this.setState({pal:true,pq:'',pi:0}),closeSel:()=>this.setState({sel:null}),
+      lines:act?act.lines:[],topLines:TOP,split:!!(act&&act.split),promptSegs:prompt(actH),
+      termFont:`${s.font}px`,termRef:this.termRef,inputRef:this.inputRef,termInput:s.input,
+      focusInput:()=>{if(!window.getSelection().toString())this.inputRef.current?.focus();},
+      onTermInput:e=>this.setState({input:e.target.value}),
+      onTermKey:e=>{
+        if(e.key==='Enter')this.run(s.input);
+        else if(e.key==='ArrowUp'&&s.hist.length){e.preventDefault();const hi=s.hi<0?s.hist.length-1:Math.max(0,s.hi-1);this.setState({hi,input:s.hist[hi]});}
+        else if(e.key==='l'&&e.ctrlKey){e.preventDefault();this.updSession(x=>({...x,lines:[]}));}
+      },
+      toggleSplit:()=>this.updSession(x=>({...x,split:!x.split})),toggleSnippets:()=>this.setState(st=>({snip:!st.snip})),
+      splitBg:act&&act.split?'var(--sel,#1c1d20)':'transparent',splitFg:act&&act.split?'var(--tx,#E4E2DE)':'var(--dm,#7d7b77)',
+      snipBg:s.snip?'var(--sel,#1c1d20)':'transparent',snipFg:s.snip?'var(--tx,#E4E2DE)':'var(--dm,#7d7b77)',snippetsOpen:s.snip&&s.layout!=='focus',isFocus:s.layout==='focus',sideOpen:s.layout==='sidebar'&&!s.sideHidden,sideClosed:s.layout==='sidebar'&&!!s.sideHidden,toggleSide:()=>this.setState(st=>({sideHidden:!st.sideHidden})),termChrome:s.layout!=='focus',termPad:s.layout==='focus'?'26px 40px':'18px 22px',topBg:s.layout==='focus'&&v==='term'?'var(--term,#0B0C0D)':'var(--bg,#0E0F10)',topBd:s.layout==='focus'&&v==='term'?'transparent':'var(--bd,#1d1e21)',
+      sftpHost:sftpH.name,portSummary:`${onCount} of ${PORTS.length} tunnels active. Tunnels open when their host connects.`,
+      paletteOpen:s.pal,pq:s.pq,palRef:this.palRef,openPalette:()=>this.setState({pal:true,pq:'',pi:0}),closePalette:()=>this.setState({pal:false}),stop:e=>e.stopPropagation(),
+      onPq:e=>this.setState({pq:e.target.value,pi:0}),
+      onPalKey:e=>{
+        if(e.key==='ArrowDown'){e.preventDefault();this.setState({pi:Math.min(pi+1,items.length-1)});}
+        else if(e.key==='ArrowUp'){e.preventDefault();this.setState({pi:Math.max(pi-1,0)});}
+        else if(e.key==='Enter'&&items[pi])items[pi].fn();
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
